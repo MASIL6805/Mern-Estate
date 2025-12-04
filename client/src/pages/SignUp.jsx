@@ -1,18 +1,68 @@
+
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link,useNavigate } from 'react-router-dom'
 
 export default function SignUp() {
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();//not to reload the page
+
+    try {
+
+      setLoading(true);
+  
+      const res= await fetch('/api/auth/sign-up',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      } 
+      );
+      const data= await res.json();
+  
+      if(data.success=== false){
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      console.log(data);
+      setError(null);
+      navigate('/sign-in');
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+    }
+
+  };
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
       <h1 className="text-3xl font-semibold text-center mb-6">Sign Up</h1>
 
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         
         <input
           type="text"
           placeholder="Username"
           className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           id="username"
+          onChange={handleChange}
         />
 
         <input
@@ -20,6 +70,7 @@ export default function SignUp() {
           placeholder="Email"
           className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           id="email"
+          onChange={handleChange}
         />
 
         <input
@@ -27,10 +78,11 @@ export default function SignUp() {
           placeholder="Password"
           className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           id="password"
+          onChange={handleChange} 
         />
 
-        <button className="bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-          Sign Up
+        <button disabled={loading} className="bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+          {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
 
@@ -42,6 +94,7 @@ export default function SignUp() {
           </Link>
         </p>
       </div>
+      {error && <p className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">{error}</p>}
     </div>
   )
 }
