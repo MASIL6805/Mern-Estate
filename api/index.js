@@ -3,6 +3,10 @@ import mongoose from 'mongoose'
 import userRouter from './routes/user.route.js';
 import cors from 'cors';
 import authRouter from './routes/auth.route.js';
+import dotenv from 'dotenv';
+
+
+dotenv.config();
 
 const app = express();
 
@@ -16,13 +20,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/mern-estate").then(()=>{
 
 
 
-app.listen(3000,()=>{
-    console.log ('server is running on port 3000');
-});
-
 
 app.use("/api/user", userRouter)
 app.use("/api/auth", authRouter);
+
 
 
 //middleware
@@ -33,6 +34,10 @@ app.use((err, req, res, next) => {
         success: false,
         statusCode,
         message,
-     });
+    });
 });
 
+
+app.listen(3000,()=>{
+    console.log ('server is running on port 3000');
+});
