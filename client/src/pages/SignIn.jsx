@@ -41,13 +41,13 @@ export default function SignIn() {
       } 
       );
       const data= await res.json();
+      console.log(data);
   
       if(data.success=== false){
         dispatch(signInFailure(data.message));
         return;
       }
       dispatch(signInSuccess(data));
-      console.log(data);
       
       navigate('/');
     } catch (error) {
@@ -94,6 +94,6 @@ export default function SignIn() {
       </div>
       {error && <p className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">{error}</p>}
     </div>
-  )
+  );
 }
 
